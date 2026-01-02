@@ -1,9 +1,9 @@
 # Hastane Bilgi Sistemi (HBS)
 
-## 🏥 Proje Vizyonu
+##  Proje Vizyonu
 Profesyonel bir Hastane Bilgi Sistemi - Microservices, Event-Driven, API Gateway, DDD, Saga Pattern ve Zero Trust güvenlik yaklaşımıyla geliştirilmiş, üretim odaklı bir mimari.
 
-## 🎯 Mimari Yaklaşım
+##  Mimari Yaklaşım
 - **Microservices Architecture**: Her servis tek bir iş sorumluluğu
 - **Event-Driven**: Kafka ile asenkron, gevşek bağlı iletişim
 - **API Gateway**: Merkezi yönlendirme, güvenlik, rate limiting
@@ -11,7 +11,7 @@ Profesyonel bir Hastane Bilgi Sistemi - Microservices, Event-Driven, API Gateway
 - **Saga Pattern**: Dağıtık transaction yönetimi
 - **Zero Trust Security**: mTLS, OAuth2/OpenID, JWT, policy enforcement
 
-## 🏗️ Teknoloji Stack
+##  Teknoloji Stack
 - **Backend**: Java 17+ / Spring Boot 3.x
 - **API**: REST, gRPC (servisler arası)
 - **Messaging**: Kafka / RabbitMQ
@@ -22,7 +22,7 @@ Profesyonel bir Hastane Bilgi Sistemi - Microservices, Event-Driven, API Gateway
 - **Containerization**: Docker (dev), Kubernetes (prod)
 - **Frontend**: Angular/React (Web), Flutter (Mobile)
 
-## 📁 Monorepo Yapısı
+##  Monorepo Yapısı
 ```
 HBS/
 ├── gateway/                    # API Gateway (Spring Cloud Gateway)
@@ -43,7 +43,7 @@ HBS/
 └── docs/                      # ADR, API contracts, DDD maps
 ```
 
-## 🎯 Bounded Contexts (DDD)
+##  Bounded Contexts (DDD)
 | Context | Aggregate Root | Database | Events |
 |---------|---------------|----------|--------|
 | Patient | Patient | PostgreSQL | patient.registered, patient.updated |
@@ -55,7 +55,7 @@ HBS/
 | Billing | Invoice | PostgreSQL | invoice.created, payment.received |
 | Inventory | Stock | PostgreSQL | stock.decremented, reorder.triggered |
 
-## 🔄 Event-Driven Architecture
+##  Event-Driven Architecture
 ### Topic Tasarımı (Kafka)
 - `patient.registered`
 - `appointment.created`
@@ -81,7 +81,7 @@ HBS/
 }
 ```
 
-## 🔐 Zero Trust Güvenlik
+##  Zero Trust Güvenlik
 - **Identity**: Keycloak OAuth2/OpenID Connect
 - **Network**: mTLS servisler arası, TLS everywhere
 - **Data**: Encryption at rest & in transit
@@ -89,7 +89,7 @@ HBS/
 - **Audit**: Immutable audit logs, PII masking
 - **Policy**: OPA (Open Policy Agent) - RBAC/ABAC
 
-## 🚀 Deployment Stratejisi
+##  Deployment Stratejisi
 ### Development (Docker Compose)
 ```bash
 cd infra
@@ -103,20 +103,20 @@ kubectl apply -f namespace.yaml
 helm install hbs ./helm-charts
 ```
 
-## 📊 Observability
+##  Observability
 - **Logs**: ELK Stack (Elasticsearch, Logstash, Kibana)
 - **Metrics**: Prometheus + Grafana
 - **Tracing**: Jaeger + OpenTelemetry
 - **Alerting**: Prometheus Alertmanager
 
-## 🧪 Testing Stratejisi
+##  Testing Stratejisi
 - **Unit Tests**: JUnit 5, Mockito
 - **Integration Tests**: Testcontainers
 - **Contract Tests**: Pact (Consumer-Driven)
 - **E2E Tests**: Cucumber, REST Assured
 - **Chaos Testing**: Fault injection
 
-## 📈 Rollout Plan (Aşamalar)
+##  Rollout Plan (Aşamalar)
 - **Phase 0**: Infrastructure baseline (Keycloak, Kafka, Postgres, Redis)
 - **Phase 1**: Core domain (Patient, Appointment, IAM, Gateway)
 - **Phase 2**: Clinical + Pharmacy
@@ -137,7 +137,7 @@ helm install hbs ./helm-charts
 
 #### Otomatik (PowerShell Script)
 ```powershell
-cd C:\Users\90551\IdeaProjects\HBS
+cd C:\Users\IdeaProjects\HBS
 .\build-and-start.ps1
 ```
 

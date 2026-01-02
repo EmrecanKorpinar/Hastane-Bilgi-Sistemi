@@ -1,0 +1,432 @@
+
+cker <!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBS - Hastane Bilgi Sistemi (Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-slate-800 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <h1 class="text-xl font-bold">🏥 HBS - Hastane Bilgi Sistemi</h1>
+                    <div class="flex space-x-1">
+                        <button onclick="showPage('home')" class="px-4 py-2 rounded-md hover:bg-slate-700 transition-colors">
+                            🏠 Ana Sayfa
+                        </button>
+                        <button onclick="showPage('create')" class="px-4 py-2 rounded-md hover:bg-slate-700 transition-colors">
+                            ➕ Yeni Hasta
+                        </button>
+                        <button onclick="showPage('list')" class="px-4 py-2 rounded-md hover:bg-slate-700 transition-colors">
+                            📋 Hasta Listesi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <div class="text-center py-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Hoş Geldiniz</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                    HBS - Hastane Bilgi Sistemi'ne hoş geldiniz.
+                    Bu sistem mikroservis mimarisi, event-driven tasarım ve modern güvenlik yaklaşımları ile geliştirilmiştir.
+                </p>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-3xl mx-auto mb-8">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-2">⚠️ Demo Modu</h3>
+                    <p class="text-yellow-700">
+                        <strong>Docker ve Maven yüklü olmadığı için bu demo HTML sayfasını kullanıyorsunuz.</strong><br>
+                        Backend servisleri olmadan frontend'i test edebilirsiniz. Veriler tarayıcınızın localStorage'ında saklanacak.
+                    </p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-6xl mb-4">🔧</div>
+                        <h3 class="text-xl font-semibold mb-2">Microservices</h3>
+                        <p class="text-gray-600">Bağımsız ölçeklenebilir servisler</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-6xl mb-4">⚡</div>
+                        <h3 class="text-xl font-semibold mb-2">Event-Driven</h3>
+                        <p class="text-gray-600">Kafka ile asenkron iletişim</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-6xl mb-4">🔒</div>
+                        <h3 class="text-xl font-semibold mb-2">Zero Trust</h3>
+                        <p class="text-gray-600">Güvenli ve denetlenebilir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Patient Page -->
+        <div id="create-page" class="page hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">➕</span> Yeni Hasta Kaydı
+                    </h2>
+
+                    <div id="success-message" class="hidden mb-4 p-4 bg-green-50 border border-green-200 rounded-md fade-in">
+                        <span class="text-green-800">✅ <span id="success-text"></span></span>
+                    </div>
+
+                    <form id="patient-form" onsubmit="handleSubmit(event)" class="space-y-6">
+                        <!-- TC Kimlik ve Doğum Tarihi -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    TC Kimlik No <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="nationalId" required maxlength="11" pattern="[0-9]{11}"
+                                    placeholder="12345678901"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Doğum Tarihi <span class="text-red-500">*</span>
+                                </label>
+                                <input type="date" id="birthDate" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Ad ve Soyad -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Ad <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="name" required placeholder="Ahmet"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Soyad <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="surname" required placeholder="Yılmaz"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Cinsiyet ve Kan Grubu -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Cinsiyet <span class="text-red-500">*</span>
+                                </label>
+                                <select id="gender" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Cinsiyet seçin</option>
+                                    <option value="MALE">Erkek</option>
+                                    <option value="FEMALE">Kadın</option>
+                                    <option value="OTHER">Diğer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kan Grubu</label>
+                                <select id="bloodType"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Kan grubu seçin</option>
+                                    <option value="A+">A Rh+</option>
+                                    <option value="A-">A Rh-</option>
+                                    <option value="B+">B Rh+</option>
+                                    <option value="B-">B Rh-</option>
+                                    <option value="AB+">AB Rh+</option>
+                                    <option value="AB-">AB Rh-</option>
+                                    <option value="0+">0 Rh+</option>
+                                    <option value="0-">0 Rh-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Telefon ve E-posta -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
+                                <input type="tel" id="phone" placeholder="+905551234567"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
+                                <input type="email" id="email" placeholder="ornek@email.com"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Şehir ve Ülke -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                                <input type="text" id="city" placeholder="İstanbul"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ülke</label>
+                                <input type="text" id="country" value="Türkiye"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors">
+                            Hasta Kaydı Oluştur
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient List Page -->
+        <div id="list-page" class="page hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">📋 Hasta Listesi</h2>
+                        <div class="flex gap-2">
+                            <input type="text" id="search-input" placeholder="Ad, soyad ile ara..."
+                                onkeyup="filterPatients()"
+                                class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                            <button onclick="filterPatients()"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                🔍 Ara
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="patient-list" class="overflow-x-auto">
+                        <!-- Hasta listesi buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-12">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            HBS - Hastane Bilgi Sistemi ©2026 | Microservices Architecture (Demo Modu - LocalStorage)
+        </div>
+    </footer>
+
+    <script>
+        // LocalStorage ile hasta verilerini yönet
+        function getPatients() {
+            const data = localStorage.getItem('hbs-patients');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function savePatients(patients) {
+            localStorage.setItem('hbs-patients', JSON.stringify(patients));
+        }
+
+        function generateFileNumber() {
+            const year = new Date().getFullYear();
+            const patients = getPatients();
+            const count = patients.length + 1;
+            return `HBS-${year}-${String(count).padStart(6, '0')}`;
+        }
+
+        function generateId() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const patient = {
+                patientId: generateId(),
+                fileNumber: generateFileNumber(),
+                nationalId: document.getElementById('nationalId').value,
+                name: document.getElementById('name').value,
+                surname: document.getElementById('surname').value,
+                fullName: document.getElementById('name').value + ' ' + document.getElementById('surname').value,
+                birthDate: document.getElementById('birthDate').value,
+                gender: document.getElementById('gender').value,
+                bloodType: document.getElementById('bloodType').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                city: document.getElementById('city').value,
+                country: document.getElementById('country').value,
+                active: true,
+                createdAt: new Date().toISOString()
+            };
+
+            const patients = getPatients();
+            patients.push(patient);
+            savePatients(patients);
+
+            // Başarı mesajı göster
+            document.getElementById('success-text').textContent =
+                `Hasta başarıyla kaydedildi! Dosya No: ${patient.fileNumber}`;
+            document.getElementById('success-message').classList.remove('hidden');
+
+            // Formu temizle
+            document.getElementById('patient-form').reset();
+
+            // 5 saniye sonra mesajı gizle
+            setTimeout(() => {
+                document.getElementById('success-message').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showPage(pageName) {
+            // Tüm sayfaları gizle
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            // Seçili sayfayı göster
+            document.getElementById(pageName + '-page').classList.remove('hidden');
+
+            // Liste sayfası ise hastaları yükle
+            if (pageName === 'list') {
+                loadPatients();
+            }
+        }
+
+        function loadPatients() {
+            const patients = getPatients();
+            const listContainer = document.getElementById('patient-list');
+
+            if (patients.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        Hasta kaydı bulunamadı. "Yeni Hasta" sayfasından hasta kaydı oluşturabilirsiniz.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dosya No</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">TC Kimlik</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ad Soyad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Doğum Tarihi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cinsiyet</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefon</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Şehir</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kan Grubu</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="patient-tbody">
+            `;
+
+            patients.forEach(patient => {
+                const genderMap = { MALE: 'Erkek', FEMALE: 'Kadın', OTHER: 'Diğer' };
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${patient.fileNumber}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.nationalId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${patient.fullName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(patient.birthDate)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${genderMap[patient.gender]}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.phone || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.city || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            ${patient.bloodType ? `<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">${patient.bloodType}</span>` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+                <div class="mt-4 text-sm text-gray-600">
+                    Toplam ${patients.length} hasta
+                </div>
+            `;
+
+            listContainer.innerHTML = html;
+        }
+
+        function filterPatients() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const allPatients = getPatients();
+
+            if (!searchTerm) {
+                loadPatients();
+                return;
+            }
+
+            const filtered = allPatients.filter(p =>
+                p.fullName.toLowerCase().includes(searchTerm) ||
+                p.nationalId.includes(searchTerm) ||
+                (p.phone && p.phone.includes(searchTerm))
+            );
+
+            const tbody = document.getElementById('patient-tbody');
+            if (!tbody) return;
+
+            if (filtered.length === 0) {
+                document.getElementById('patient-list').innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        "${searchTerm}" için sonuç bulunamadı
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            const genderMap = { MALE: 'Erkek', FEMALE: 'Kadın', OTHER: 'Diğer' };
+
+            filtered.forEach(patient => {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${patient.fileNumber}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.nationalId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${patient.fullName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(patient.birthDate)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${genderMap[patient.gender]}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.phone || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${patient.city || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            ${patient.bloodType ? `<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">${patient.bloodType}</span>` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Sayfa yüklendiğinde ana sayfayı göster
+        window.onload = function() {
+            showPage('home');
+        };
+    </script>
+</body>
+</html>
+
